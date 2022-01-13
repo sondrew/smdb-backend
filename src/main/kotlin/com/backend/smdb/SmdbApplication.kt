@@ -18,8 +18,14 @@ class SmdbController(val service: SmdbService) {
 	@GetMapping("/save/{externalId}")
 	fun saveMovie(@PathVariable externalId: Int) = service.saveMovie(externalId)
 
+    @GetMapping("/unsave/{externalId}")
+    fun removeMovie(@PathVariable externalId: Int) = service.deleteMovie(externalId)
+
 	@GetMapping("/discover")
 	fun getPopularMovies(): List<TMDbMovieResponseModel> = service.getPopularMovies()
+
+    @DeleteMapping("/nuke")
+    fun deleteAllFavouriteMovies() = service.deleteFavourites()
 }
 
 fun main(args: Array<String>) {
