@@ -1,21 +1,33 @@
 package com.backend.smdb
 
+import com.backend.smdb.models.MovieResponseModel
+import com.backend.smdb.models.TMDbMovieResponseModel
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.getForObject
 
 @Service
 class SmdbService(val db: SmdbRepository, val gateway: TMDbGateway) {
 
-    fun getAll(): List<Movie> = db.findAll()
+    fun getFavourites(): List<MovieResponseModel> {
+        val movies = db.findAll()
+        return movies.map ( Movie::toResponseModel )
+    }
 
-    fun getAllFavourites(): List<Movie> = db.findAll() //db.getFavourites()
+    fun saveMovie(externalId: Int) {
+        val streamProviders = getStreamingProviders(externalId)
+        val movieDetails = getMovieDetails(externalId)
+        db.save(movieDetails.toDomainModel(streamProviders))
+    }
 
-    fun saveMovie(movie: Movie) = db.save(movie)
+    fun getMovieDetails(externalId: Int): MovieDetailsDto = gateway.getMovieDetails(externalId)
 
-    fun getPopularMovies(): List<MovieEntity> {
-        val response = gateway.getPopularMovies()
-        return response.results
+    fun getPopularMovies(): List<TMDbMovieResponseModel> {
+        val response: TMDbMultipleMoviesDto = gateway.getPopularMovies()
+        return response.results.map ( TMDbMovieDto::toResponseModel )
+    }
 
+    fun getStreamingProviders(externalId: Int): StreamCountryDto? {
+        val providers = gateway.getStreamingProviders(externalId)
+        if (providers.results?.containsKey("NO") == true) return providers.results["NO"]
+        return null;
     }
 }

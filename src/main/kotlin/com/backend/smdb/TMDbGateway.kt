@@ -6,11 +6,29 @@ import org.springframework.web.client.getForObject
 
 @Component
 class TMDbGateway  {
+    private final val apiBaseUrl = "https://api.themoviedb.org/3"
     private final val apiKey = "api_key=a72a25d115113ee281b71ef311503cd5"
 
-    fun getPopularMovies(): TMBdResponseEntity {
-        val uri = "https://api.themoviedb.org/3/discover/movie?$apiKey"
-        val response = RestTemplate().getForObject<TMBdResponseEntity>(uri)
-        return response
+    private inline fun <reified T> fetch(uri: String): T {
+        return RestTemplate().getForObject(uri)
     }
+
+    fun buildUri(path: String): String = "$apiBaseUrl$path${if (!path.contains("?")) "?" else "&"}$apiKey"
+
+    fun getPopularMovies(): TMDbMultipleMoviesDto {
+        val uri = buildUri("/discover/movie")
+        return RestTemplate().getForObject(uri)
+    }
+
+    fun getStreamingProviders(externalId: Int): StreamResponseDto {
+        val uri = buildUri("/movie/$externalId/watch/providers")
+        return RestTemplate().getForObject(uri)
+    }
+
+    fun getMovieDetails(externalId: Int): MovieDetailsDto {
+        val uri = buildUri("/movie/$externalId?")
+        return fetch(uri)
+    }
+
+
 }

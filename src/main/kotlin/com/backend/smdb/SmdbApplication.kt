@@ -1,14 +1,10 @@
 package com.backend.smdb
 
-import org.bson.types.ObjectId
+import com.backend.smdb.models.MovieResponseModel
+import com.backend.smdb.models.TMDbMovieResponseModel
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.data.annotation.Id
-import org.springframework.data.mongodb.core.mapping.Document
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @SpringBootApplication
 class SmdbApplication
@@ -17,13 +13,13 @@ class SmdbApplication
 class SmdbController(val service: SmdbService) {
 
 	@GetMapping("/favourites")
-	fun getAll(): List<Movie> = service.getAllFavourites()
+	fun getAll(): List<MovieResponseModel> = service.getFavourites()
 
-	@PostMapping("/favourites")
-	fun saveMovie(@RequestBody movie: Movie) = service.saveMovie(movie)
+	@GetMapping("/save/{externalId}")
+	fun saveMovie(@PathVariable externalId: Int) = service.saveMovie(externalId)
 
 	@GetMapping("/discover")
-	fun getPopularMovies(): List<MovieEntity> = service.getPopularMovies()
+	fun getPopularMovies(): List<TMDbMovieResponseModel> = service.getPopularMovies()
 }
 
 fun main(args: Array<String>) {
