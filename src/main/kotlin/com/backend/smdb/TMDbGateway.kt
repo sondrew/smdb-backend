@@ -9,24 +9,30 @@ class TMDbGateway  {
     private final val apiBaseUrl = "https://api.themoviedb.org/3"
     private final val apiKey = "api_key=a72a25d115113ee281b71ef311503cd5"
 
+    fun buildUri(path: String): String = "$apiBaseUrl$path${if (!path.contains("?")) "?" else "&"}$apiKey"
+
     private inline fun <reified T> fetch(uri: String): T {
         return RestTemplate().getForObject(uri)
     }
 
-    fun buildUri(path: String): String = "$apiBaseUrl$path${if (!path.contains("?")) "?" else "&"}$apiKey"
-
-    fun getPopularMovies(): TMDbMultipleMoviesDto {
-        val uri = buildUri("/discover/movie")
-        return RestTemplate().getForObject(uri)
+    fun getPopularMovies(page: Int = 1): TMDbMultipleMoviesDto {
+        val uri = buildUri("/discover/movie?page=$page")
+        return fetch(uri)
     }
 
     fun getStreamingProviders(externalId: Int): StreamResponseDto {
         val uri = buildUri("/movie/$externalId/watch/providers")
-        return RestTemplate().getForObject(uri)
+        val asdf: StreamResponseDto = fetch(uri)
+        return asdf
     }
 
     fun getMovieDetails(externalId: Int): MovieDetailsDto {
         val uri = buildUri("/movie/$externalId?")
+        return fetch(uri)
+    }
+
+    fun getMoviesWithProviders(providers: List<Int>): TMDbMultipleMoviesDto {
+        val uri = buildUri("movie/discover?&watch_region=NO&with_watch_providers=${providers.joinToString("")}")
         return fetch(uri)
     }
 
