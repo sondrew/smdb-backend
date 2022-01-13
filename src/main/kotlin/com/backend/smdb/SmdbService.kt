@@ -35,8 +35,9 @@ class SmdbService(val db: SmdbRepository, val gateway: TMDbGateway) {
         val response: TMDbMultipleMoviesDto = gateway.getPopularMovies()
         val response2: TMDbMultipleMoviesDto = gateway.getPopularMovies(2)
         val response3: TMDbMultipleMoviesDto = gateway.getPopularMovies(3)
+        val favouritedMovieIds: List<Int> = db.findAll().map ( Movie::externalId )
         val allResponses: List<TMDbMovieDto> = response.results + response2.results + response3.results
-        return allResponses.map ( TMDbMovieDto::toResponseModel )
+        return allResponses.map { it.toResponseModel(it.hasBeenFavourited(favouritedMovieIds)) }
     }
 
     fun discoverMoviesWithProviders(providers: List<Int>) : List<TMDbMovieResponseModel> {

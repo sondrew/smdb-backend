@@ -24,7 +24,7 @@ data class TMDbMovieDto(
     val genre_ids: List<Int>,
     val video: Boolean
 ) {
-    fun toResponseModel(): TMDbMovieResponseModel =
+    fun toResponseModel(favourited: Boolean = false): TMDbMovieResponseModel =
         TMDbMovieResponseModel(
             id = id,
             title = title,
@@ -34,9 +34,11 @@ data class TMDbMovieDto(
             overview = overview,
             posterUrl = "$POSTER_BASE_URL$poster_path",
             releaseDate = release_date,
-            markedFavourite = false
-            //markedFavourite = sync with internal database to ensure favourite from TMDb is also marked when using discovered endpoint
+            markedFavourite = favourited
         )
+
+    fun hasBeenFavourited(externalIds: List<Int>): Boolean = externalIds.contains(id)
+
 }
 
 data class MovieDetailsDto(

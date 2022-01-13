@@ -14,6 +14,6 @@ interface SmdbRepository : MongoRepository<Movie, String> {
     @Query("{ externalId : ?0 }")
     fun getFavouriteMovie(externalId: Int): Movie?
 
-    @DeleteQuery("{ externalId = ?0 }")
+    @DeleteQuery("{ externalId: ?0 }")
     fun deleteMovie(externalId: Int)
 }
