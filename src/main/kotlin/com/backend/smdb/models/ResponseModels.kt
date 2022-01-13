@@ -1,7 +1,5 @@
 package com.backend.smdb.models
 
-import java.text.SimpleDateFormat
-
 data class MovieResponseModel(
     // Internal data
     val id: String,
@@ -33,6 +31,7 @@ data class TMDbMovieResponseModel(
     val voteCount: Int,
     val popularity: Double,
     val overview: String,
-    val posterPath: String,
-    val releaseDate: String
+    val posterUrl: String,
+    val releaseDate: String,
+    val markedFavourite: Boolean
 )
