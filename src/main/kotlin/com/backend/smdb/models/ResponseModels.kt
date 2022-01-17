@@ -1,5 +1,7 @@
 package com.backend.smdb.models
 
+import org.springframework.data.annotation.LastModifiedDate
+
 data class MovieResponseModel(
     // Internal data
     val id: String,
@@ -34,4 +36,28 @@ data class TMDbMovieResponseModel(
     val posterUrl: String,
     val releaseDate: String,
     val markedFavourite: Boolean
+)
+
+
+data class MovieRequestModel(
+    val rating: Int? = null,
+    val comment: String = String(),
+    val watchRank: Int? = null,
+    val markedWatchlist: Boolean = false,
+    val markedFavourite: Boolean = false,
+    val lists: List<String> = listOf(),
+    val platformStream: List<String>? = listOf(),
+    val platformBuy: List<String>? = listOf(),
+    @LastModifiedDate val modifiedDate: LastModifiedDate = LastModifiedDate(),
+    // External
+    val externalId: Int,
+    val title: String,
+    val imdbUrl: String,
+    val posterUrl: String,
+    val voteAverage: Double,
+    val voteCount: Int,
+    val popularity: Double,
+    val overview: String,
+    val releaseDate: String,
+    val genres: List<String>
 )

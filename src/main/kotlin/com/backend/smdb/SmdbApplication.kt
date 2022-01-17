@@ -24,6 +24,9 @@ class SmdbController(val service: SmdbService) {
 	@GetMapping("/discover")
 	fun getPopularMovies(): List<TMDbMovieResponseModel> = service.getPopularMovies()
 
+    @PutMapping("/update")
+    fun updateMovie(@RequestBody movie: TMDbMovieResponseModel) = service
+
     @DeleteMapping("/nuke")
     fun deleteAllFavouriteMovies() = service.deleteFavourites()
 }

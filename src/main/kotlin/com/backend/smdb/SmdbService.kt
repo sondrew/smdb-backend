@@ -14,17 +14,21 @@ class SmdbService(val db: SmdbRepository, val gateway: TMDbGateway) {
 
     fun deleteFavourites() = db.deleteAll()
 
-    fun movieExists(externalId: Int): Boolean = getFavouriteMovie(externalId) == null
+    fun movieExists(externalId: Int): Boolean = getMovie(externalId) == null
 
-    fun getFavouriteMovie(externalId: Int): Movie? = db.getFavouriteMovie(externalId)
+    fun getMovie(externalId: Int): Movie? = db.getMovie(externalId)
 
     fun saveMovie(externalId: Int) {
-        val movie = getFavouriteMovie(externalId)
+        val movie = getMovie(externalId)
         if (movie == null) {
             val streamProviders = getStreamingProvidersForNorway(externalId)
             val movieDetails = getMovieDetails(externalId)
             db.save(movieDetails.toDomainModel(streamProviders))
         }
+    }
+
+    fun updateMovie(updateMovie: TMDbMovieResponseModel) {
+        val existingMovie = getMovie(updateMovie.id)
     }
 
     fun deleteMovie(externalId: Int) = db.deleteMovie(externalId)

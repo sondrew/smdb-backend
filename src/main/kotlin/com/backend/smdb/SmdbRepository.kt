@@ -12,7 +12,7 @@ interface SmdbRepository : MongoRepository<Movie, String> {
     fun getFavourites(): List<Movie>
 
     @Query("{ externalId : ?0 }")
-    fun getFavouriteMovie(externalId: Int): Movie?
+    fun getMovie(externalId: Int): Movie?
 
     @DeleteQuery("{ externalId: ?0 }")
     fun deleteMovie(externalId: Int)

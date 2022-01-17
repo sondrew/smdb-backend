@@ -22,8 +22,7 @@ class TMDbGateway  {
 
     fun getStreamingProviders(externalId: Int): StreamResponseDto {
         val uri = buildUri("/movie/$externalId/watch/providers")
-        val asdf: StreamResponseDto = fetch(uri)
-        return asdf
+        return fetch(uri)
     }
 
     fun getMovieDetails(externalId: Int): MovieDetailsDto {
