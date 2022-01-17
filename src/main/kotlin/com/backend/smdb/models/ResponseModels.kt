@@ -1,5 +1,6 @@
 package com.backend.smdb.models
 
+import com.backend.smdb.MediaType
 import org.springframework.data.annotation.LastModifiedDate
 
 data class MovieResponseModel(
@@ -38,6 +39,18 @@ data class TMDbMovieResponseModel(
     val markedFavourite: Boolean
 )
 
+data class SearchResponseModel(
+    val id: Int,
+    val title: String,
+    val mediaType: MediaType,
+    val voteAverage: Double,
+    val voteCount: Int,
+    val popularity: Double,
+    val overview: String,
+    val posterUrl: String,
+    val releaseDate: String,
+    val originalTitle: String
+)
 
 data class MovieRequestModel(
     val rating: Int? = null,

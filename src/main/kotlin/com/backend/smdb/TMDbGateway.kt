@@ -15,7 +15,7 @@ class TMDbGateway  {
         return RestTemplate().getForObject(uri)
     }
 
-    fun getPopularMovies(page: Int = 1): TMDbMultipleMoviesDto {
+    fun getPopularMovies(page: Int): TMDbMultipleMoviesDto {
         val uri = buildUri("/discover/movie?page=$page")
         return fetch(uri)
     }
@@ -35,7 +35,7 @@ class TMDbGateway  {
         return fetch(uri)
     }
 
-    fun searchMulti(query: String): TMDbMultipleMoviesDto {
+    fun searchMulti(query: String): TMDbMultiSearchDto {
         val uri = buildUri("/search/multi?query=$query")
         return fetch(uri)
     }

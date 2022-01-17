@@ -1,9 +1,10 @@
 package com.backend.smdb
 
+import com.backend.smdb.models.SearchResponseModel
 import com.backend.smdb.models.TMDbMovieResponseModel
 
 const val IMDB_BASE_URL = "https://www.imdb.com/title/"
-const val POSTER_BASE_URL = "https://image.tmdb.org/t/p/w500/"
+const val POSTER_BASE_URL = "https://image.tmdb.org/t/p/w500"
 
 data class TMDbMultipleMoviesDto(
     val page: Int,
@@ -41,6 +42,45 @@ data class TMDbMovieDto(
     fun hasBeenFavourited(externalIds: List<Int>): Boolean = externalIds.contains(id)
 
 }
+
+data class TMDbMultiSearchDto (
+    val page: Int,
+    val results: List<SearchResultDto>,
+    val total_pages: Int,
+    val total_results: Int
+)
+
+data class SearchResultDto(
+    val id: Int,
+    val media_type: MediaType,
+    val title: String?,
+    val name: String?,
+    val poster_path: String?,
+    val popularity: Double,
+    val overview: String?,
+    val vote_average: Double?,
+    val vote_count: Int?,
+    val original_title: String?,
+    val original_name: String?,
+    val release_date: String?,
+    val first_air_date: String?
+){
+    fun toResponseModel(): SearchResponseModel =
+        SearchResponseModel(
+            id = id,
+            title = title ?: name ?: "",
+            mediaType = media_type,
+            voteAverage = vote_average ?: 0.0,
+            voteCount = vote_count ?: 0,
+            popularity = popularity,
+            overview = overview ?: "",
+            posterUrl = "$POSTER_BASE_URL$poster_path",
+            releaseDate = release_date ?: first_air_date ?: "",
+            originalTitle = original_title ?: original_name ?: ""
+        )
+}
+
+enum class MediaType {tv, movie, person}
 
 data class MovieDetailsDto(
     val id: Int,
