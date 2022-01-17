@@ -15,6 +15,7 @@ data class TMDbMultipleMoviesDto(
 data class TMDbMovieDto(
     val id: Int,
     val title: String,
+    val media_type: String?,
     val vote_average: Double,
     val vote_count: Int,
     val popularity: Double,

@@ -31,7 +31,12 @@ class TMDbGateway  {
     }
 
     fun getMoviesWithProviders(providers: List<Int>): TMDbMultipleMoviesDto {
-        val uri = buildUri("movie/discover?&watch_region=NO&with_watch_providers=${providers.joinToString("")}")
+        val uri = buildUri("/movie/discover?&watch_region=NO&with_watch_providers=${providers.joinToString("")}")
+        return fetch(uri)
+    }
+
+    fun searchMulti(query: String): TMDbMultipleMoviesDto {
+        val uri = buildUri("/search/multi?query=$query")
         return fetch(uri)
     }
 
