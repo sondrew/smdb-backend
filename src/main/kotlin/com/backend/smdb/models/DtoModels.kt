@@ -1,7 +1,10 @@
 package com.backend.smdb
 
+import com.backend.smdb.models.CreateRecommendationListItemRequestModel
 import com.backend.smdb.models.SearchResponseModel
 import com.backend.smdb.models.TMDbMovieResponseModel
+import com.fasterxml.jackson.annotation.JsonAlias
+import javax.management.Descriptor
 
 const val IMDB_BASE_URL = "https://www.imdb.com/title/"
 const val POSTER_BASE_URL = "https://image.tmdb.org/t/p/w500"
@@ -38,9 +41,6 @@ data class TMDbMovieDto(
             releaseDate = release_date,
             markedFavourite = favourited
         )
-
-    fun hasBeenFavourited(externalIds: List<Int>): Boolean = externalIds.contains(id)
-
 }
 
 data class TMDbMultiSearchDto (
@@ -56,6 +56,7 @@ data class SearchResultDto(
     val title: String?,
     val name: String?,
     val poster_path: String?,
+    val backdrop_path: String?,
     val popularity: Double,
     val overview: String?,
     val vote_average: Double?,
@@ -74,29 +75,29 @@ data class SearchResultDto(
             voteCount = vote_count ?: 0,
             popularity = popularity,
             overview = overview ?: "",
-            posterUrl = "$POSTER_BASE_URL$poster_path",
+            posterUrl = if (poster_path != null) "$POSTER_BASE_URL$poster_path" else "",
             releaseDate = release_date ?: first_air_date ?: "",
             originalTitle = original_title ?: original_name ?: ""
         )
 }
 
-enum class MediaType {tv, movie, person}
+data class GenreDto(val id: Int, val name: String)
 
 data class MovieDetailsDto(
     val id: Int,
     val title: String,
+    val original_title: String,
     val vote_average: Double,
     val vote_count: Int,
     val popularity: Double,
     val overview: String,
     val poster_path: String,
     val release_date: String,
+    val tagline: String?,
     val genres: List<GenreDto>,
     val video: Boolean,
-    val imdb_id: String
+    val imdb_id: String?
 ){
-    data class GenreDto(val id: Int, val name: String)
-
     fun toDomainModel(providers: StreamCountryDto?): Movie =
         Movie(
             externalId = id,
@@ -113,9 +114,86 @@ data class MovieDetailsDto(
             platformStream = providers?.flatrate?.map { it.provider_name },
             platformBuy = providers?.buy?.map { it.provider_name }
         )
+
+    fun toRecommendedMedia(userRecommendation: CreateRecommendationListItemRequestModel) =
+        RecommendedMedia(
+            id = this.id,
+            listIndex = userRecommendation.index,
+            userRating = userRecommendation.userRating,
+            userComment = userRecommendation.userComment,
+            title = this.title,
+            originalTitle = this.original_title,
+            description = this.overview,
+            mediaType = MediaType.tv,
+            posterPath = this.poster_path,
+            imdbPath = this.imdb_id,
+            genres = this.genres.map ( GenreDto::name )
+        )
 }
 
+data class TVDetailsDto(
+    val id: Int,
+    val name: String,
+    val vote_average: Double,
+    val vote_count: Int,
+    val popularity: Double,
+    val overview: String,
+    val poster_path: String?,
+    val first_air_date: String,
+    val last_air_date: String,
+    val number_of_seasons: Int,
+    val number_of_episodes: Int,
+    val original_name: String,
+    val in_production: Boolean,
+    val genres: List<GenreDto>,
+    val status: String,
+    val tagline: String,
+    val external_ids: ExternalIdsDto?,
+    @JsonAlias("watch/providers")
+    val watch_providers: StreamResponseDto?
 
+){
+    data class GenreDto(val id: Int, val name: String)
+
+    fun toDomainModel(providers: StreamCountryDto?): Movie =
+        Movie(
+            externalId = id,
+            title = name,
+            markedFavourite = true,
+            imdbUrl = if (external_ids?.imdb_id != null) "$IMDB_BASE_URL${external_ids.imdb_id}" else "",
+            posterUrl = if (poster_path != null) "$POSTER_BASE_URL$poster_path" else "",
+            voteAverage = vote_average,
+            voteCount = vote_count,
+            popularity = popularity,
+            overview = overview,
+            releaseDate = first_air_date,
+            genres = genres.map { it.name },
+            platformStream = providers?.flatrate?.map { it.provider_name },
+            platformBuy = providers?.buy?.map { it.provider_name }
+        )
+
+    fun toRecommendedMedia(userRecommendation: CreateRecommendationListItemRequestModel) =
+        RecommendedMedia(
+            id = this.id,
+            listIndex = userRecommendation.index,
+            userRating = userRecommendation.userRating,
+            userComment = userRecommendation.userComment,
+            title = this.name,
+            originalTitle = this.original_name,
+            description = this.overview,
+            mediaType = MediaType.tv,
+            posterPath = this.poster_path,
+            imdbPath = external_ids?.imdb_id,
+            genres = this.genres.map ( GenreDto::name )
+        )
+}
+
+data class ExternalIdsDto(
+    val imdb_id: String?,
+    val facebook_id: String?,
+    val instagram_id: String?,
+    val twitter_id: String?
+)
 
 data class StreamResponseDto(
     val id: Int?,
