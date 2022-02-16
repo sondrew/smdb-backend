@@ -30,6 +30,11 @@ class TMDbGateway  {
         return fetch(uri)
     }
 
+    fun getTVShowDetails(externalId: Int, withProviders: Boolean = false): TVDetailsDto {
+        val uri = buildUri("/tv/$externalId${if (withProviders) "&append_to_response=watch/providers" else ""}")
+        return fetch(uri)
+    }
+
     fun getMoviesWithProviders(providers: List<Int>): TMDbMultipleMoviesDto {
         val uri = buildUri("/movie/discover?&watch_region=NO&with_watch_providers=${providers.joinToString("")}")
         return fetch(uri)
